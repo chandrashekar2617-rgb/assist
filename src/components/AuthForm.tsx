@@ -169,6 +169,14 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
           >
             {isLogin ? "Don't have an account? Sign up" : 'Already have an account? Sign in'}
           </button>
+          <div className="mt-4">
+            <button
+              onClick={() => window.location.reload()}
+              className="text-gray-500 hover:text-gray-700 text-sm"
+            >
+              ← Back to Home
+            </button>
+          </div>
         </div>
       </div>
     </div>

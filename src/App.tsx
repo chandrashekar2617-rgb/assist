@@ -1,10 +1,13 @@
 import React from 'react';
+import { useState } from 'react';
 import { useAuth } from './hooks/useAuth';
 import { AuthForm } from './components/AuthForm';
 import { Dashboard } from './components/Dashboard';
+import { LandingPage } from './components/LandingPage';
 
 function App() {
   const { user, loading } = useAuth();
+  const [showAuth, setShowAuth] = useState(false);
 
   if (loading) {
     return (
@@ -17,10 +20,19 @@ function App() {
     );
   }
 
+  // If user is logged in, show dashboard
+  if (user) {
+    return <Dashboard />;
+  }
+
+  // If user clicked "Get Started" or wants to authenticate, show auth form
+  if (showAuth) {
+    return <AuthForm onSuccess={() => setShowAuth(false)} />;
+  }
+
+  // Otherwise show landing page
   return (
-    <div className="App">
-      {user ? <Dashboard /> : <AuthForm />}
-    </div>
+    <LandingPage onGetStarted={() => setShowAuth(true)} />
   );
 }
 
