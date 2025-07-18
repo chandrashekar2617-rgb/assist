@@ -1,0 +1,44 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow users to create and read their own user document
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Allow authenticated users to read other users (for admin functionality)
+    match /users/{userId} {
+      allow read: if request.auth != null;
+    }
+    
+    // ASSIST collection rules - Allow authenticated users full access
+    match /ASSIST/{documentId} {
+      allow read, write, create, delete: if request.auth != null;
+    }
+    
+    // Optional: More restrictive ASSIST rules (uncomment if needed)
+    // match /ASSIST/{documentId} {
+    //   // Allow authenticated users to read all ASSIST records
+    //   allow read: if request.auth != null;
+    //   
+    //   // Allow authenticated users to create new ASSIST records
+    //   allow create: if request.auth != null 
+    //     && request.resource.data.keys().hasAll(['customerName', 'registrationNo', 'workshopName'])
+    //     && request.resource.data.customerName is string
+    //     && request.resource.data.registrationNo is string;
+    //   
+    //   // Allow updates only if user is authenticated and maintains required fields
+    //   allow update: if request.auth != null 
+    //     && request.resource.data.keys().hasAll(['customerName', 'registrationNo', 'workshopName']);
+    //   
+    //   // Allow delete only for authenticated users
+    //   allow delete: if request.auth != null;
+    // }
+    
+    // Workshop/Dealership specific rules (if you want to restrict by workshop)
+    // match /ASSIST/{documentId} {
+    //   allow read, write: if request.auth != null 
+    //     && (resource == null || resource.data.workshopName == request.auth.token.workshopName);
+    // }
+  }
+}
