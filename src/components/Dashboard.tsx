@@ -16,13 +16,12 @@ export const Dashboard: React.FC = () => {
   useEffect(() => {
     if (!user) return;
 
-    const q = user.role === 'admin' 
-      ? query(collection(db, 'ASSIST'), orderBy('createdAt', 'desc'))
-      : query(
-          collection(db, 'ASSIST'), 
-          where('createdBy', '==', user.id),
-          orderBy('createdAt', 'desc')
-        );
+    let q;
+    if (user.role === 'admin') {
+      q = query(collection(db, 'ASSIST'), orderBy('createdAt', 'desc'));
+    } else {
+      q = query(collection(db, 'ASSIST'), where('createdBy', '==', user.id));
+    }
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const enquiriesData = snapshot.docs.map(doc => ({
@@ -32,7 +31,16 @@ export const Dashboard: React.FC = () => {
         updatedAt: doc.data().updatedAt?.toDate(),
       })) as Enquiry[];
 
-      setEnquiries(enquiriesData);
+      // Sort client-side for non-admin users to avoid composite index requirement
+      const sortedEnquiries = user.role === 'admin' 
+        ? enquiriesData 
+        : enquiriesData.sort((a, b) => {
+            const dateA = a.createdAt?.getTime() || 0;
+            const dateB = b.createdAt?.getTime() || 0;
+            return dateB - dateA;
+          });
+      
+      setEnquiries(sortedEnquiries);
       setLoading(false);
     });
 
