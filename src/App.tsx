@@ -4,7 +4,7 @@ import { AuthForm } from './components/AuthForm';
 import { useAuth } from './hooks/useAuthUser';
 
 function App() {
-  const { user, loading } = useAuth();
+  const { user, loading, logout } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
 
   if (loading) {
@@ -23,11 +23,7 @@ function App() {
           <h1 className="text-2xl font-bold text-gray-900 mb-4">Welcome, {user.name}!</h1>
           <p className="text-gray-600 mb-6">You are successfully logged in.</p>
           <button
-            onClick={() => {
-              import('firebase/auth').then(({ signOut }) => {
-                signOut(import('./firebase/config').then(m => m.auth));
-              });
-            }}
+            onClick={logout}
             className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
           >
             Logout
