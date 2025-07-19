@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { LandingPage } from './components/LandingPage';
-import { AuthForm } from './components/AuthForm';
 import { useAuth } from './hooks/useAuthUser';
 
 function App() {
