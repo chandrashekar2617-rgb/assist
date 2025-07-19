@@ -24,7 +24,7 @@ function App() {
           <button
             onClick={() => {
               import('firebase/auth').then(({ signOut }) => {
-                signOut(import('../firebase/config').then(m => m.auth));
+                signOut(import('./firebase/config').then(m => m.auth));
               });
             }}
             className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
