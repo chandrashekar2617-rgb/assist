@@ -1,20 +1,22 @@
-// src/firebase/config.ts
-import { initializeApp } from 'firebase/app';
-import { getAuth } from 'firebase/auth';
-import { getFirestore } from 'firebase/firestore';
+// Import the functions you need from the SDKs you need
+import { initializeApp } from "firebase/app";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore";
 
+// Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || 'AIzaSyAocUaoPWOFKL3c7k9JQe2GlvJUPV3YgOc',
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || 'demo-project.firebaseapp.com',
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || 'demo-project',
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || 'demo-project.appspot.com',
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || '123456789',
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || 'demo-app-id',
+  apiKey: "AIzaSyAocUaoPWOFKL3c7k9JQe2GlvJUPV3YgOc",
+  authDomain: "assist-database.firebaseapp.com",
+  projectId: "assist-database",
+  storageBucket: "assist-database.appspot.com",
+  messagingSenderId: "446540596017",
+  appId: "1:446540596017:web:ca5904dd96cccb6234e610",
+  measurementId: "G-MMBV6FY2WZ"
 };
 
+// Initialize Firebase
 const app = initializeApp(firebaseConfig);
+export const auth = getAuth(app);
+export const db = getFirestore(app);
 
-const auth = getAuth(app);
-const db = getFirestore(app);
-
-export { auth, db };
+export default app;
