@@ -1,14 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Car, FileText, Database, Download, LogOut, User } from 'lucide-react';
 import { LandingPage } from './components/LandingPage';
 import { AuthForm } from './components/AuthForm';
 import ServiceRecordForm from './components/ServiceRecordForm';
 import ServiceRecordTable from './components/ServiceRecordTable';
-import { useAuth } from './hooks/useAuthUser';
 import { VehicleServiceRecord } from './types';
 import { generateServiceRecordPDF, generateBulkPDF } from './utils/pdfGenerator';
 import { generatePolicyPDF } from './utils/policyPdfGenerator';
 import { exportToExcel, exportToCSV } from './utils/exportUtils';
+import { useAuth } from './hooks/useAuthUser';
 import {
   collection,
   addDoc,
@@ -27,7 +27,7 @@ function App() {
   const [records, setRecords] = useState<VehicleServiceRecord[]>([]);
   const [editingRecord, setEditingRecord] = useState<VehicleServiceRecord | null>(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     if (!user) return;
 
     const q = query(collection(db, 'serviceRecords'), where('userId', '==', user.uid));
@@ -119,7 +119,7 @@ function App() {
     );
   }
 
-  // If user is authenticated, show the service management system
+  // If user is authenticated, show dashboard
   if (user) {
     return (
       <div className="min-h-screen bg-gray-100">
