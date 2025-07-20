@@ -30,7 +30,6 @@ function App() {
   React.useEffect(() => {
     if (!user) return;
 
-    const q = query(collection(db, 'serviceRecords'), where('userId', '==', user.uid));
     const q = query(collection(db, 'serviceRecords'), where('userId', '==', user.id));
     const unsubscribe = onSnapshot(q, snapshot => {
       const data = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as VehicleServiceRecord));
