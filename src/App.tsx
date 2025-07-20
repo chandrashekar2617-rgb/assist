@@ -31,6 +31,7 @@ function App() {
     if (!user) return;
 
     const q = query(collection(db, 'serviceRecords'), where('userId', '==', user.uid));
+    const q = query(collection(db, 'serviceRecords'), where('userId', '==', user.id));
     const unsubscribe = onSnapshot(q, snapshot => {
       const data = snapshot.docs.map(doc => ({ ...doc.data(), id: doc.id } as VehicleServiceRecord));
       setRecords(data);
@@ -41,7 +42,7 @@ function App() {
 
   const handleAddRecord = async (newRecord: VehicleServiceRecord) => {
     try {
-      const recordWithUser = { ...newRecord, userId: user?.uid };
+      const recordWithUser = { ...newRecord, userId: user?.id };
 
       if (editingRecord) {
         const docRef = doc(db, 'serviceRecords', editingRecord.id);
@@ -98,7 +99,7 @@ function App() {
         const imported = JSON.parse(reader.result as string);
         if (Array.isArray(imported)) {
           for (const rec of imported) {
-            await addDoc(collection(db, 'serviceRecords'), { ...rec, userId: user?.uid });
+            await addDoc(collection(db, 'serviceRecords'), { ...rec, userId: user?.id });
           }
           alert('Data imported successfully!');
         } else {
