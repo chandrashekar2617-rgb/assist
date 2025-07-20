@@ -2,6 +2,13 @@ import React, { useState } from 'react';
 import { Car, Mail, Lock, User, Building, ArrowLeft, Eye, EyeOff } from 'lucide-react';
 import { useAuth } from '../hooks/useAuthUser';
 
+// Admin emails that can access signup functionality
+const ADMIN_EMAILS = [
+  'arman.srmis@gmail.com',
+  'shalinchaudhari@gmail.com',
+  'chandrashekar2617@gmail.com'
+];
+
 interface AuthFormProps {
   onBack: () => void;
 }
@@ -18,7 +25,13 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onBack }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const { signIn, signUp } = useAuth();
+  const { signIn, signUp, user } = useAuth();
+
+  // Check if current user is admin (can access signup)
+  const isAdminUser = user && ADMIN_EMAILS.includes(user.email);
+
+  // Only show signup toggle if user is admin
+  const canShowSignup = !user || isAdminUser;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -203,7 +216,8 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onBack }) => {
           </form>
 
           {/* Toggle Form */}
-          <div className="mt-6 text-center">
+          {canShowSignup && (
+            <div className="mt-6 text-center">
             <p className="text-gray-600">
               {isLogin ? "Don't have an account?" : "Already have an account?"}
               <button
@@ -217,7 +231,17 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onBack }) => {
                 {isLogin ? 'Sign Up' : 'Sign In'}
               </button>
             </p>
-          </div>
+            </div>
+          )}
+
+          {/* Admin notice for signup access */}
+          {user && !isAdminUser && (
+            <div className="mt-6 text-center">
+              <p className="text-sm text-gray-500">
+                Account creation is restricted to administrators only.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </div>
