@@ -30,7 +30,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onBack }) => {
   // Check if current user is admin (can access signup)
   const isAdminUser = user && ADMIN_EMAILS.includes(user.email);
 
-  // Only show signup toggle if user is admin
+  // Only show signup toggle if user is admin OR if no user is logged in
   const canShowSignup = !user || isAdminUser;
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -42,6 +42,12 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onBack }) => {
       if (isLogin) {
         await signIn(formData.email, formData.password);
       } else {
+        // Check if user is trying to signup without admin privileges
+        if (user && !isAdminUser) {
+          setError('You do not have permission to create new accounts.');
+          setLoading(false);
+          return;
+        }
         await signUp(formData.email, formData.password, formData.name, formData.workshopName);
       }
     } catch (error: any) {
@@ -49,7 +55,8 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onBack }) => {
       if (error.code === 'auth/invalid-credential' || 
           error.code === 'auth/wrong-password' || 
           error.code === 'auth/user-not-found' ||
-          error.code === 'auth/network-request-failed') {
+          error.code === 'auth/network-request-failed' ||
+          error.code === 'auth/invalid-login-credentials') {
         setError('Please check your email address and password. Make sure they are correct and try again.');
       } else if (error.code === 'auth/email-already-in-use') {
         setError('An account with this email already exists. Please sign in instead.');
@@ -215,22 +222,22 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onBack }) => {
             </button>
           </form>
 
-          {/* Toggle Form */}
+          {/* Toggle Form - Only show if user can access signup */}
           {canShowSignup && (
             <div className="mt-6 text-center">
-            <p className="text-gray-600">
-              {isLogin ? "Don't have an account?" : "Already have an account?"}
-              <button
-                onClick={() => {
-                  setIsLogin(!isLogin);
-                  setError('');
-                  setFormData({ email: '', password: '', name: '', workshopName: '' });
-                }}
-                className="ml-2 text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
-              >
-                {isLogin ? 'Sign Up' : 'Sign In'}
-              </button>
-            </p>
+              <p className="text-gray-600">
+                {isLogin ? "Don't have an account?" : "Already have an account?"}
+                <button
+                  onClick={() => {
+                    setIsLogin(!isLogin);
+                    setError('');
+                    setFormData({ email: '', password: '', name: '', workshopName: '' });
+                  }}
+                  className="ml-2 text-indigo-600 hover:text-indigo-700 font-medium transition-colors"
+                >
+                  {isLogin ? 'Sign Up' : 'Sign In'}
+                </button>
+              </p>
             </div>
           )}
 
@@ -239,6 +246,16 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onBack }) => {
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-500">
                 Account creation is restricted to administrators only.
+              </p>
+            </div>
+          )}
+
+          {/* Show restriction message for non-admin users when not logged in */}
+          {!user && !isLogin && (
+            <div className="mt-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+              <p className="text-sm text-yellow-800">
+                <strong>Note:</strong> Account creation is restricted to authorized administrators only. 
+                If you need access, please contact your system administrator.
               </p>
             </div>
           )}
