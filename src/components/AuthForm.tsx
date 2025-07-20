@@ -32,7 +32,21 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onBack }) => {
         await signUp(formData.email, formData.password, formData.name, formData.workshopName);
       }
     } catch (error: any) {
-      setError(error.message || 'An error occurred');
+      // Handle Firebase auth errors with user-friendly messages
+      if (error.code === 'auth/invalid-credential' || 
+          error.code === 'auth/wrong-password' || 
+          error.code === 'auth/user-not-found' ||
+          error.code === 'auth/network-request-failed') {
+        setError('Please check your email address and password. Make sure they are correct and try again.');
+      } else if (error.code === 'auth/email-already-in-use') {
+        setError('An account with this email already exists. Please sign in instead.');
+      } else if (error.code === 'auth/weak-password') {
+        setError('Password should be at least 6 characters long.');
+      } else if (error.code === 'auth/invalid-email') {
+        setError('Please enter a valid email address.');
+      } else {
+        setError('Something went wrong. Please try again later.');
+      }
     } finally {
       setLoading(false);
     }
