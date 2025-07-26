@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { Car, FileText, Database, Download, LogOut, User } from 'lucide-react';
+import { Car, FileText, Database, Download, LogOut, User, Bot, Home } from 'lucide-react';
 import { LandingPage } from './components/LandingPage';
 import { AuthForm } from './components/AuthForm';
 import ServiceRecordForm from './components/ServiceRecordForm';
 import ServiceRecordTable from './components/ServiceRecordTable';
+import AssistDashboard from './components/AssistDashboard';
 import { VehicleServiceRecord } from './types';
 import { generateServiceRecordPDF, generateBulkPDF } from './utils/pdfGenerator';
 import { generatePolicyPDF } from './utils/policyPdfGenerator';
@@ -24,6 +25,7 @@ import { db } from './firebase/config';
 function App() {
   const { user, loading, logout } = useAuth();
   const [showAuth, setShowAuth] = useState(false);
+  const [currentView, setCurrentView] = useState<'dashboard' | 'assist'>('dashboard');
   const [records, setRecords] = useState<VehicleServiceRecord[]>([]);
   const [editingRecord, setEditingRecord] = useState<VehicleServiceRecord | null>(null);
 
@@ -119,8 +121,14 @@ function App() {
     );
   }
 
-  // If user is authenticated, show dashboard
+  // If user is authenticated, show dashboard or assist view
   if (user) {
+    // Show ASSIST Dashboard
+    if (currentView === 'assist') {
+      return <AssistDashboard records={records} onBackToDashboard={() => setCurrentView('dashboard')} />;
+    }
+
+    // Show Main Dashboard
     return (
       <div className="min-h-screen bg-gray-100">
         {/* Header */}
@@ -145,6 +153,24 @@ function App() {
                   <User className="w-4 h-4 mr-1 text-white" />
                   Workshop Admin
                 </div>
+                {currentView === 'dashboard' && (
+                  <button
+                    onClick={() => setCurrentView('assist')}
+                    className="bg-purple-500/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-purple-500/30 flex items-center border border-purple-300/20"
+                  >
+                    <Bot className="w-4 h-4 mr-2" />
+                    ASSIST
+                  </button>
+                )}
+                {currentView === 'assist' && (
+                  <button
+                    onClick={() => setCurrentView('dashboard')}
+                    className="bg-green-500/20 backdrop-blur-sm text-white px-4 py-2 rounded-lg hover:bg-green-500/30 flex items-center border border-green-300/20"
+                  >
+                    <Home className="w-4 h-4 mr-2" />
+                    Dashboard
+                  </button>
+                )}
                 {records.length > 0 && (
                   <button
                     onClick={handleGenerateBulkPDF}
@@ -196,6 +222,15 @@ function App() {
             onGeneratePolicyPDF={handleGeneratePolicyPDF}
           />
         </div>
+
+        {/* Floating ASSIST Button */}
+        <button
+          onClick={() => setCurrentView('assist')}
+          className="fixed bottom-6 right-6 bg-gradient-to-r from-purple-600 to-indigo-600 text-white p-4 rounded-full shadow-2xl hover:from-purple-700 hover:to-indigo-700 transition-all duration-200 flex items-center space-x-2 z-40"
+        >
+          <Bot className="w-6 h-6" />
+          <span className="hidden sm:inline font-medium">ASSIST</span>
+        </button>
       </div>
     );
   }
